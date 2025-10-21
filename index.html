@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسار الطرق للمقاولات | تخطيط ودهان الطرق</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0a2463;
+            --secondary-blue: #1e40af;
+            --accent-yellow: #fbbf24;
+            --dark-yellow: #d97706;
+            --neon-blue: #3b82f6;
+            --neon-gold: #fcd34d;
+            --light-bg: #f8fafc;
+            --dark-bg: #0f172a;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: #333;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* تأثيرات التحميل */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-bg));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+            transform: translateZ(50px);
+        }
+
+        .loading-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-yellow);
+            animation: pulse 2s infinite;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-yellow);
+            border-radius: 4px;
+            animation: loading 2s ease-in-out forwards;
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        /* التنقل */
+        header {
+            background: rgba(10, 36, 99, 0.9);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            transform-style: preserve-3d;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
+            color: var(--accent-yellow);
+        }
+
+        .logo-icon {
+            color: var(--accent-yellow);
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-yellow);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:before {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* قسم الهيرو */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-bg) 100%);
+            position: relative;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(251,191,36,0.05)"/></svg>') no-repeat center center;
+            background-size: cover;
+            animation: float 20s infinite ease-in-out;
+            transform-style: preserve-3d;
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 10;
+            max-width: 800px;
+            padding: 0 2rem;
+            transform-style: preserve-3d;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            transform: translateZ(30px);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            transform: translateZ(20px);
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(45deg, var(--accent-yellow), var(--dark-yellow));
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            transform: translateZ(40px);
+            position: relative;
+            overflow: hidden;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover:before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateZ(40px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* قسم الخدمات */
+        .services {
+            padding: 5rem 5%;
+            background: var(--light-bg);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary-blue);
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--accent-yellow);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .service-image {
+            height: 200px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-image:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        .service-content {
+            padding: 1.5rem;
+        }
+
+        .service-content h3 {
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .service-content p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* معرض الصور */
+        .gallery {
+            padding: 5rem 5%;
+            background: var(--dark-bg);
+            color: white;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            border-radius: 8px;
+            overflow: hidden;
+            height: 250px;
+            background: var(--primary-blue);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px) rotateY(5deg) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 1.5rem;
+            transform: translateY(100%);
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-overlay h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .gallery-overlay p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* قسم الاتصال */
+        .contact {
+            padding: 5rem 5%;
+            background: var(--light-bg);
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-info {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            transition: var(--transition);
+        }
+
+        .contact-info:hover {
+            transform: translateY(-5px) rotateX(3deg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .contact-info h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .contact-detail i {
+            color: var(--accent-yellow);
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0.8rem 1.5rem;
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+        }
+
+        /* الفوتر */
+        footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 3rem 5% 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-section h3 {
+            color: var(--accent-yellow);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #ccc;
+            margin-bottom: 0.5rem;
+            display: block;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-yellow);
+            padding-right: 5px;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        /* تأثيرات الحركة */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 40px, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(45deg) translateX(-100%); }
+            100% { transform: rotate(45deg) translateX(100%); }
+        }
+
+        /* تحسينات الاستجابة */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        /* تأثيرات الأداء */
+        .performance-optimized {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة التحميل -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-road"></i>
+            </div>
+            <h2>مسار الطرق للمقاولات</h2>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p>جاري التحميل...</p>
+        </div>
+    </div>
+
+    <!-- الرأس -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo performance-optimized">
+                <i class="fas fa-road logo-icon"></i>
+                <span>مسار الطرق</span>
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#home">الرئيسية</a></li>
+                <li><a href="#services">خدماتنا</a></li>
+                <li><a href="#gallery">معرض الصور</a></li>
+                <li><a href="#contact">اتصل بنا</a></li>
+            </ul>
+            
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- قسم الهيرو -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1 class="performance-optimized">مسار الطرق للمقاولات</h1>
+            <p class="performance-optimized">رواد في مجال تخطيط ودهان الطرق وتوفير حلول وقوف السيارات المتكاملة</p>
+            <a href="#services" class="cta-button performance-optimized">اكتشف خدماتنا</a>
+        </div>
+    </section>
+
+    <!-- قسم الخدمات -->
+    <section class="services" id="services">
+        <h2 class="section-title">خدماتنا</h2>
+        <div class="services-grid">
+            <!-- خدمة 1 -->
+            <div class="service-card performance-optimized">
+                <div class="service-image">
+                    <i class="fas fa-road"></i>
+                </div>
+                <div class="service-content">
+                    <h3>دهانات الطرق</h3>
+                    <p>نقدم خدمات دهانات الطرق بأنواعها المختلفة بما في ذلك الدهانات الحرارية والإيبوكسي عالية الجودة.</p>
+                </div>
+            </div>
+            
+            <!-- خدمة 2 -->
+            <div class="service-card performance-optimized">
+                <div class="service-image">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="service-content">
+                    <h3>التخطيط والترقيم</h3>
+                    <p>تخطيط وترقيم مواقف السيارات والمحطات والمستودعات وفقًا لأعلى المعايير والمواصفات.</p>
+                </div>
+            </div>
+            
+            <!-- خدمة 3 -->
+            <div class="service-card performance-optimized">
+                <div class="service-image">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="service-content">
+                    <h3>مواقف السيارات</h3>
+                    <p>تصميم وتنفيذ مواقف السيارات الكهربائية ومواقف ذوي الاحتياجات الخاصة.</p>
+                </div>
+            </div>
+            
+            <!-- خدمة 4 -->
+            <div class="service-card performance-optimized">
+                <div class="service-image">
+                    <i class="fas fa-traffic-light"></i>
+                </div>
+                <div class="service-content">
+                    <h3>اللوحات الإرشادية والمصدات</h3>
+                    <p>تركيب جميع اللوحات الإرشادية والمصدات وفق الاشتراطات المطلوبة والمواصفات القياسية.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- معرض الصور -->
+    <section class="gallery" id="gallery">
+        <h2 class="section-title">معرض أعمالنا</h2>
+        <div class="gallery-grid">
+            <!-- الصورة 1 -->
+            <div class="gallery-item performance-optimized">
+                <img src="https://i.postimg.cc/NGKNFgGB/d0a78738-60fc-4abd-a635-864679fb63ad.jpg" alt="مشروع تخطيط طرق" class="gallery-image">
+                <div class="gallery-overlay">
+                    <h3>تخطيط طرق متكامل</h3>
+                    <p>تنفيذ أعمال تخطيط الطرق باحترافية عالية</p>
+                </div>
+            </div>
+            
+            <!-- الصورة 2 -->
+            <div class="gallery-item performance-optimized">
+                <img src="https://i.postimg.cc/cLLt1JZR/bdc607bc-e40c-4a3d-af07-75c47d4a6ecc.jpg" alt="لوحات إرشادية" class="gallery-image">
+                <div class="gallery-overlay">
+                    <h3>لوحات إرشادية</h3>
+                    <p>تركيب لوحات إرشادية وفق المواصفات القياسية</p>
+                </div>
+            </div>
+            
+            <!-- الصورة 3 -->
+            <div class="gallery-item performance-optimized">
+                <img src="https://i.postimg.cc/fLB6N5vX/3bd8a063-55c9-4197-8179-954ef179ceba.jpg" alt="دهان طرق حراري" class="gallery-image">
+                <div class="gallery-overlay">
+                    <h3>دهان طرق حراري</h3>
+                    <p>تنفيذ أعمال دهان حراري عالي الجودة</p>
+                </div>
+            </div>
+            
+            <!-- الصورة 4 -->
+            <div class="gallery-item performance-optimized">
+                <img src="https://i.postimg.cc/y8j59vM7/43b6d12b-1877-4069-92c8-1889153c7b6a.jpg" alt="مواقف سيارات" class="gallery-image">
+                <div class="gallery-overlay">
+                    <h3>مواقف سيارات</h3>
+                    <p>تصميم وتنفيذ مواقف السيارات</p>
+                </div>
+            </div>
+            
+            <!-- الصورة 5 -->
+            <div class="gallery-item performance-optimized">
+                <img src="https://i.postimg.cc/GhcxYddF/15546f41-eff2-43ac-afdc-4311a9be5bb3.jpg" alt="أعمال الطرق" class="gallery-image">
+                <div class="gallery-overlay">
+                    <h3>أعمال الطرق</h3>
+                    <p>تنفيذ مشاريع الطرق بجودة عالية</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الاتصال -->
+    <section class="contact" id="contact">
+        <h2 class="section-title">اتصل بنا</h2>
+        <div class="contact-container">
+            <div class="contact-info performance-optimized">
+                <h3>معلومات الاتصال</h3>
+                <div class="contact-detail">
+                    <i class="fas fa-phone"></i>
+                    <span>0556143573</span>
+                </div>
+                <div class="contact-detail">
+                    <i class="fas fa-envelope"></i>
+                    <span>info@masar-altoroq.com</span>
+                </div>
+                <div class="contact-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>المملكة العربية السعودية</span>
+                </div>
+                
+                <a href="https://wa.me/966556143573" class="whatsapp-btn" target="_blank">
+                    <i class="fab fa-whatsapp"></i>
+                    تواصل معنا عبر واتساب
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>مسار الطرق للمقاولات</h3>
+                <p>رواد في مجال تخطيط ودهان الطرق وتوفير حلول وقوف السيارات المتكاملة في المملكة العربية السعودية.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>روابط سريعة</h3>
+                <a href="#home">الرئيسية</a>
+                <a href="#services">خدماتنا</a>
+                <a href="#gallery">معرض الصور</a>
+                <a href="#contact">اتصل بنا</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>خدماتنا</h3>
+                <a href="#">دهانات الطرق</a>
+                <a href="#">التخطيط والترقيم</a>
+                <a href="#">مواقف السيارات</a>
+                <a href="#">اللوحات الإرشادية</a>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>جميع الحقوق محفوظة &copy; 2024 مسار الطرق للمقاولات</p>
+        </div>
+    </footer>
+
+    <script>
+        // إخفاء شاشة التحميل بعد تحميل الصفحة
+        window.addEventListener('load', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.visibility = 'hidden';
+            }, 1000);
+        });
+
+        // تأثيرات التمرير السلس
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // تأثيرات ثلاثية الأبعاد للبطاقات عند التمرير
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0) rotateX(0)';
+                }
+            });
+        }, observerOptions);
+
+        // تطبيق المراقبة على العناصر
+        document.querySelectorAll('.service-card, .gallery-item, .contact-info').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px) rotateX(5deg)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // القائمة المتنقلة للهواتف
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (mobileMenu) {
+            mobileMenu.addEventListener('click', () => {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+        }
+
+        // إغلاق القائمة عند النقر على رابط
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    navLinks.style.display = 'none';
+                }
+            });
+        });
+
+        // إعادة فتح القائمة عند تغيير حجم النافذة
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                navLinks.style.display = 'flex';
+            } else {
+                navLinks.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
